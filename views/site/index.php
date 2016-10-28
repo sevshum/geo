@@ -48,6 +48,7 @@ $this->title = 'My Yii Application';
                             <?= Html::encode($item['address']) . Yii::t('app', ' (Click for more info)') ?>
                         </a>
                         <br>
+                        <span class="loader">Loading...</span>
                         <span class="js-info hidden">
                             <span class="metro"></span><br>
                             <span class="district"></span><br>
@@ -72,18 +73,25 @@ $this->title = 'My Yii Application';
 <?php  $this->registerJs("
 
     $('.js-more-info').on('click', function(e){
+        function fillInInfo(data, className, name) {
+            var str = data.join('<br>&nbsp; &nbsp; &nbsp;');
+            spanWrap.find(className).append('<strong>' + name  + '</strong><br> &nbsp; &nbsp; &nbsp;' + str);
+        }
         var self = $(this);
+        var spanWrap = self.closest('li').find('.js-info');
+        var loader = self.closest('li').find('.loader');
+        loader.show();
+        spanWrap.find('.metro').html('');
+        spanWrap.find('.district').html('');
+        spanWrap.find('.street').html('');
+        spanWrap.find('.house').html('');
         e.preventDefault();
          $.get('" . Url::to(['/site/get-info']) ."', {lng: self.data('lng'), lat: self.data('lat')}, function(data) {
-                    function fillInInfo(data, className, name) {
-                        var str = data.join('<br>&nbsp; &nbsp; &nbsp;');
-                        spanWrap.find(className).append('<strong>' + name  + '</strong><br> &nbsp; &nbsp; &nbsp;' + str);
-                    }
-                    var spanWrap = self.closest('li').find('.js-info');
                     fillInInfo(data.metro, '.metro', 'Метро:');
                     fillInInfo(data.district, '.district', 'Район:');
                     fillInInfo(data.street, '.street', 'Улица:');
                     fillInInfo(data.house, '.house', 'Дом:');
+                    loader.hide();
                     spanWrap.removeClass('hidden');
                 }, 'json');
     });
