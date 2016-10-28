@@ -53,7 +53,7 @@ class GeoParser
         return $res;
     }
 
-    private static function _getResultsArray(\Yandex\Geo\Api $api, $kind, $length = 0.02)
+    private static function _getResultsArray(\Yandex\Geo\Api $api, $kind, $length = 0.045)
     {
         $api->setArea($length, $length);
         $api->setKind($kind)->load();
